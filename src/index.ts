@@ -3,4 +3,5 @@
  */
 
 export { Checkout } from './checkout';
+export { ProductCatalog } from './catalog';
 export { Product, CartItem, PricingRule } from './types';

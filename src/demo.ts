@@ -3,7 +3,7 @@
  * Run with: npm run dev
  */
 
-import { Product } from '.';
+import { Product, ProductCatalog } from '.';
 
 const products: Product[] = [
   { sku: 'ipd', name: 'Super iPad', price: 549.99 },
@@ -12,4 +12,4 @@ const products: Product[] = [
   { sku: 'vga', name: 'VGA adapter', price: 30.0 },
 ];
 
-const catalog = new Map(products.map((p) => [p.sku, p]));
+const catalog = new ProductCatalog(products);

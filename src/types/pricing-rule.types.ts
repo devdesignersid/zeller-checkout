@@ -5,6 +5,8 @@ import { CartItem } from './product.types';
  * Each rule calculates the total price of the item it applies to.
  */
 export interface PricingRule {
+  /** The SKU of the product the rule applies to */
+  readonly sku: string;
   /**
    * Apply the pricing rule and return the calculated total for applicable items.
    * @param items - All items in the cart (Transactional Data).

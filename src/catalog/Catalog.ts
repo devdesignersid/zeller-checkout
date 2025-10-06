@@ -34,4 +34,11 @@ export class ProductCatalog {
   hasProduct(sku: string): boolean {
     return this.products.has(sku);
   }
+
+  /**
+   * Fetch all products in the catalog.
+   */
+  getAllProducts(): Product[] {
+    return Array.from(this.products.values());
+  }
 }

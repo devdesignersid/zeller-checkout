@@ -5,3 +5,9 @@
 export { Checkout } from './checkout';
 export { ProductCatalog } from './catalog';
 export { Product, CartItem, PricingRule } from './types';
+export {
+  BulkDiscountRule,
+  BuyXGetYFreeRule,
+  RegularPricingRule,
+  composePricingRules,
+} from './rules';

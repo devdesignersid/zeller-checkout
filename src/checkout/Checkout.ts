@@ -18,7 +18,7 @@ export class Checkout {
   scan(itemSku: string): void {
     if (!this.catalog.hasProduct(itemSku)) {
       console.warn(
-        `Attempted to scan unknown item: ${itemSku} - Scan ignored.`,
+        `Warning: Attempted to scan unknown item: ${itemSku} - Scan ignored.`,
       );
 
       return;

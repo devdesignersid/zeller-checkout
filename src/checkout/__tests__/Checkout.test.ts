@@ -5,7 +5,7 @@ import { ProductCatalog } from '../../catalog';
 
 describe('Checkout', () => {
   let catalog: ProductCatalog;
-  let mockRule: PricingRule;
+  let mockRules: PricingRule[];
 
   const testProducts: Product[] = [
     { sku: 'ipd', name: 'Super iPad', price: 549.99 },
@@ -16,26 +16,27 @@ describe('Checkout', () => {
 
   beforeEach(() => {
     catalog = new ProductCatalog(testProducts);
-    mockRule = {
+    // Create a rule for each product that calculates price at catalog price
+    mockRules = testProducts.map((product) => ({
+      sku: product.sku,
       apply: jest.fn((items: CartItem[]) => {
-        return items.reduce(
-          (sum, item) => sum + catalog.getPrice(item.sku) * item.quantity,
-          0,
-        );
+        const item = items.find((i) => i.sku === product.sku);
+        if (!item) return 0;
+        return item.quantity * catalog.getPrice(product.sku);
       }),
-    };
+    }));
   });
 
   describe('scan', () => {
     it('should add items to the cart', () => {
-      const checkout = new Checkout([mockRule], catalog);
+      const checkout = new Checkout(mockRules, catalog);
       checkout.scan('ipd');
 
       expect(checkout.total()).toBe(549.99);
     });
 
     it('should accumulate quantity when scanning the same item multiple times', () => {
-      const checkout = new Checkout([mockRule], catalog);
+      const checkout = new Checkout(mockRules, catalog);
       checkout.scan('atv');
       checkout.scan('atv');
       checkout.scan('atv');
@@ -44,7 +45,7 @@ describe('Checkout', () => {
     });
 
     it('should handle multiple different items', () => {
-      const checkout = new Checkout([mockRule], catalog);
+      const checkout = new Checkout(mockRules, catalog);
       checkout.scan('ipd');
       checkout.scan('mbp');
       checkout.scan('vga');
@@ -54,7 +55,7 @@ describe('Checkout', () => {
 
     it('should warn & ignore scanning of unknown SKU', () => {
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
-      const checkout = new Checkout([mockRule], catalog);
+      const checkout = new Checkout(mockRules, catalog);
 
       checkout.scan('unknown_sku');
       checkout.scan('ipd');
@@ -69,18 +70,21 @@ describe('Checkout', () => {
 
   describe('total', () => {
     it('should return 0 for an empty cart', () => {
-      const checkout = new Checkout([mockRule], catalog);
+      const checkout = new Checkout(mockRules, catalog);
       expect(checkout.total()).toBe(0);
     });
 
     it('should sum results from all independent pricing rules', () => {
       const rule1: PricingRule = {
+        sku: 'ipd',
         apply: jest.fn((items: CartItem[]) => 100),
       };
       const rule2: PricingRule = {
+        sku: 'mbp',
         apply: jest.fn((items: CartItem[]) => 200),
       };
       const rule3: PricingRule = {
+        sku: 'atv',
         apply: jest.fn((items: CartItem[]) => 50.5),
       };
 
@@ -95,6 +99,7 @@ describe('Checkout', () => {
 
     it('should pass all cart items to each pricing rule', () => {
       const spyRule: PricingRule = {
+        sku: 'ipd',
         apply: jest.fn((items: CartItem[]) => {
           expect(items).toHaveLength(3);
           expect(items.find((item) => item.sku === 'ipd')?.quantity).toBe(2);
@@ -118,6 +123,7 @@ describe('Checkout', () => {
 
     it('should round the total to 2 decimal places', () => {
       const preciseRule: PricingRule = {
+        sku: 'ipd',
         apply: jest.fn((items: CartItem[]) => {
           return 123.456789;
         }),
@@ -132,7 +138,7 @@ describe('Checkout', () => {
 
   describe('clear', () => {
     it('should remove all items from the cart', () => {
-      const checkout = new Checkout([mockRule], catalog);
+      const checkout = new Checkout(mockRules, catalog);
       checkout.scan('ipd');
       checkout.scan('mbp');
       checkout.scan('vga');
@@ -143,7 +149,7 @@ describe('Checkout', () => {
     });
 
     it('should allow scanning new items after clearing the cart', () => {
-      const checkout = new Checkout([mockRule], catalog);
+      const checkout = new Checkout(mockRules, catalog);
       checkout.scan('atv');
       checkout.clear();
       checkout.scan('vga');

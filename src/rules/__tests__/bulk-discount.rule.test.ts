@@ -45,6 +45,13 @@ describe('BulkDiscountRule', () => {
       expect(atvRule.apply(items)).toBe(-66.5);
     });
 
+    it('should NOT apply discount when quantity equals threshold', () => {
+      const rule = new BulkDiscountRule('ipd', 4, 499.99, catalog);
+      const items = [{ sku: 'ipd', quantity: 4 }];
+
+      expect(rule.apply(items)).toBe(0);
+    });
+
     it('should throw an error if the SKU is missing from the catalog', () => {
       const invalidRule = new BulkDiscountRule(
         'unknown',

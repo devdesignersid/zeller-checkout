@@ -33,11 +33,9 @@ export class BuyXGetYFreeRule implements PricingRule {
 
     const unitPrice = this.catalog.getPrice(this.sku);
 
-    /** How many times customer fully qualifies for the deal */
+    const freeItemsPerSet = this.setQuantity - this.payQuantity;
     const completeSets = Math.floor(itemsForSku.quantity / this.setQuantity);
-    const remainingItems = itemsForSku.quantity % this.setQuantity;
-
-    const chargeableQuantity = completeSets * this.payQuantity + remainingItems;
-    return chargeableQuantity * unitPrice;
+    const totalFreeItems = completeSets * freeItemsPerSet;
+    return -(totalFreeItems * unitPrice);
   }
 }

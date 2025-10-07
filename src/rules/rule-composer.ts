@@ -3,9 +3,11 @@ import { ProductCatalog } from '../catalog';
 import { RegularPricingRule } from './regular-pricing.rule';
 
 /**
- * Compose the final set of pricing rules to be applied during checkout.
+ * Composes the final set of pricing rules to be applied during checkout.
  *
- * If no specific rule assigned for a SKU, will use regular pricing
+ * This function ensures that every item in the catalog has a base price
+ * calculated via a RegularPricingRule, and then adds all promotional rules
+ * to apply discounts/adjustments on top.
  * @param catalog The product catalog
  * @param pricingRules Pricing defined for specific SKUs
  * @returns Final set of pricing rules to be applied
@@ -15,25 +17,20 @@ export function composePricingRules(
   pricingRules: PricingRule[],
 ): PricingRule[] {
   const rules: PricingRule[] = [];
-  const skusWithRules = new Set<string>();
+  const skusInCatalog = catalog.getAllProducts().map((p) => p.sku);
 
-  for (const pricingRule of pricingRules) {
-    if (!catalog.hasProduct(pricingRule.sku)) {
+  for (const sku of skusInCatalog) {
+    rules.push(new RegularPricingRule(sku, catalog));
+  }
+
+  for (const rule of pricingRules) {
+    if (!catalog.hasProduct(rule.sku)) {
       console.warn(
-        `Warning: Pricing rule assigned to unknown SKU: ${pricingRule.sku} - Rule ignored.`,
+        `Warning: Pricing rule assigned to unknown SKU: ${rule.sku} - Rule ignored.`,
       );
       continue;
     }
-
-    rules.push(pricingRule);
-    skusWithRules.add(pricingRule.sku);
-  }
-
-  for (const product of catalog.getAllProducts()) {
-    if (!skusWithRules.has(product.sku)) {
-      // If no specific rule assigned, use regular pricing
-      rules.push(new RegularPricingRule(product.sku, catalog));
-    }
+    rules.push(rule);
   }
 
   return rules;

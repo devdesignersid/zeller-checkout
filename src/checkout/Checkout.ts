@@ -38,8 +38,13 @@ export class Checkout {
   total(): number {
     const cartItems = Array.from(this.items.values());
 
+    const immutableCartItems: CartItem[] = cartItems.map((item) => ({
+      sku: item.sku,
+      quantity: item.quantity,
+    }));
+
     const total = this.pricingRules.reduce(
-      (sum, rule) => sum + rule.apply(cartItems),
+      (sum, rule) => sum + rule.apply(immutableCartItems),
       0,
     );
 

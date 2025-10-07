@@ -24,7 +24,7 @@ export class BuyXGetYFreeRule implements PricingRule {
     private readonly catalog: ProductCatalog,
   ) {
     if (setQuantity <= payQuantity)
-      throw new Error('buyQuantity must be greater than payQuantity');
+      throw new Error('setQuantity must be greater than payQuantity');
   }
 
   apply(items: CartItem[]): number {

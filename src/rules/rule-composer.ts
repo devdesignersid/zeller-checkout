@@ -9,21 +9,23 @@ import { RegularPricingRule } from './regular-pricing.rule';
  * calculated via a RegularPricingRule, and then adds all promotional rules
  * to apply discounts/adjustments on top.
  * @param catalog The product catalog
- * @param pricingRules Pricing defined for specific SKUs
+ * @param promotionalRules Pricing defined for specific SKUs
  * @returns Final set of pricing rules to be applied
  */
 export function composePricingRules(
   catalog: ProductCatalog,
-  pricingRules: PricingRule[],
+  promotionalRules: PricingRule[],
 ): PricingRule[] {
   const rules: PricingRule[] = [];
   const skusInCatalog = catalog.getAllProducts().map((p) => p.sku);
 
+  //  Add ALL Regular Pricing Rules first
   for (const sku of skusInCatalog) {
     rules.push(new RegularPricingRule(sku, catalog));
   }
 
-  for (const rule of pricingRules) {
+  // Then add promotional rules, if the SKU exists in the catalog
+  for (const rule of promotionalRules) {
     if (!catalog.hasProduct(rule.sku)) {
       console.warn(
         `Warning: Pricing rule assigned to unknown SKU: ${rule.sku} - Rule ignored.`,

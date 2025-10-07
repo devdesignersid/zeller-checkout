@@ -29,10 +29,10 @@ describe('BuyXGetYFreeRule', () => {
 
     it('should throw an error if setQuantity is less than or equal to payQuantity', () => {
       expect(() => new BuyXGetYFreeRule('atv', 2, 3, catalog)).toThrow(
-        'buyQuantity must be greater than payQuantity',
+        'setQuantity must be greater than payQuantity',
       );
       expect(() => new BuyXGetYFreeRule('atv', 3, 3, catalog)).toThrow(
-        'buyQuantity must be greater than payQuantity',
+        'setQuantity must be greater than payQuantity',
       );
     });
   });

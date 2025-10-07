@@ -17,7 +17,9 @@ export class RegularPricingRule implements PricingRule {
   ) {}
   apply(items: CartItem[]): number {
     const itemsForSku = items.find((item) => item.sku === this.sku);
-    if (!itemsForSku) return 0;
+    if (!itemsForSku || itemsForSku.quantity <= 0) {
+      return 0;
+    }
 
     const unitPrice = this.catalog.getPrice(this.sku);
     return itemsForSku.quantity * unitPrice;

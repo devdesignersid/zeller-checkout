@@ -33,3 +33,5 @@ checkout.scan('atv');
 checkout.scan('vga');
 
 console.log('Total price: $', checkout.total().toFixed(2)); // Expected: $249.00
+
+checkout.clear();

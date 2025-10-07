@@ -27,8 +27,8 @@ export class BulkDiscountRule implements PricingRule {
     const itemsForSku = items.find((item) => item.sku === this.sku);
     if (!itemsForSku) return 0;
 
-    if (itemsForSku.quantity >= this.threshold) {
-      const unitPrice = this.catalog.getPrice(this.sku);
+    const unitPrice = this.catalog.getPrice(this.sku);
+    if (itemsForSku.quantity > this.threshold) {
       const discountPerItem = unitPrice - this.discountedPrice;
       return -(itemsForSku.quantity * discountPerItem);
     }

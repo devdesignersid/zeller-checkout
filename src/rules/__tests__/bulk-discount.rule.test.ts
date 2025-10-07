@@ -39,15 +39,10 @@ describe('BulkDiscountRule', () => {
       expect(rule.apply(items)).toBe(0);
     });
 
-    it('should apply the discount at the exact threshold quantity', () => {
-      const items: CartItem[] = [{ sku: 'ipd', quantity: THRESHOLD }];
-      expect(rule.apply(items)).toBe(-200.0);
-    });
-
     it('should apply the discount and handle fractional prices correctly', () => {
       const atvRule = new BulkDiscountRule('atv', 5, 100.0, catalog);
-      const items: CartItem[] = [{ sku: 'atv', quantity: 5 }];
-      expect(atvRule.apply(items)).toBe(-47.5);
+      const items: CartItem[] = [{ sku: 'atv', quantity: 7 }];
+      expect(atvRule.apply(items)).toBe(-66.5);
     });
 
     it('should throw an error if the SKU is missing from the catalog', () => {

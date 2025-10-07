@@ -134,6 +134,38 @@ describe('Checkout', () => {
 
       expect(checkout.total()).toBe(123.46);
     });
+
+    it('should correctly sum base price and negative discount rules', () => {
+      const baseRule: PricingRule = {
+        sku: 'atv',
+        apply: jest.fn((items) => {
+          const item = items.find((i) => i.sku === 'atv');
+          return item ? item.quantity * 109.5 : 0;
+        }),
+      };
+
+      const discountRule: PricingRule = {
+        sku: 'atv',
+        apply: jest.fn(() => -50.0),
+      };
+
+      const otherRule: PricingRule = {
+        sku: 'mbp',
+        apply: jest.fn(() => 0),
+      };
+
+      // Base Rule MUST come before Discount Rule in the final rules array
+      const checkout = new Checkout(
+        [baseRule, discountRule, otherRule],
+        catalog,
+      );
+      checkout.scan('atv');
+      checkout.scan('atv');
+
+      expect(checkout.total()).toBe(169.0);
+      expect(baseRule.apply).toHaveBeenCalled();
+      expect(discountRule.apply).toHaveBeenCalled();
+    });
   });
 
   describe('clear', () => {

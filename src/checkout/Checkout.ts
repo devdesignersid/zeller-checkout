@@ -33,7 +33,7 @@ export class Checkout {
 
   /**
    * Calculates the total price applying all pricing rules.
-   * @returns
+   * @returns The total price of all items in the cart.
    */
   total(): number {
     const cartItems = Array.from(this.items.values());

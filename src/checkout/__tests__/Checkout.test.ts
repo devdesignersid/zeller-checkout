@@ -2,16 +2,17 @@ import { CartItem, PricingRule, Product } from '../../types';
 
 import { Checkout } from '../Checkout';
 import { ProductCatalog } from '../../catalog';
+import { toCents } from '../../utils';
 
 describe('Checkout', () => {
   let catalog: ProductCatalog;
   let mockRules: PricingRule[];
 
   const testProducts: Product[] = [
-    { sku: 'ipd', name: 'Super iPad', price: 549.99 },
-    { sku: 'mbp', name: 'MacBook Pro', price: 1399.99 },
-    { sku: 'atv', name: 'Apple TV', price: 109.5 },
-    { sku: 'vga', name: 'VGA adapter', price: 30.0 },
+    { sku: 'ipd', name: 'Super iPad', price: toCents(549.99) },
+    { sku: 'mbp', name: 'MacBook Pro', price: toCents(1399.99) },
+    { sku: 'atv', name: 'Apple TV', price: toCents(109.5) },
+    { sku: 'vga', name: 'VGA adapter', price: toCents(30.0) },
   ];
 
   beforeEach(() => {
@@ -77,15 +78,15 @@ describe('Checkout', () => {
     it('should sum results from all independent pricing rules', () => {
       const rule1: PricingRule = {
         sku: 'ipd',
-        apply: jest.fn((items: CartItem[]) => 100),
+        apply: jest.fn((items: CartItem[]) => toCents(100)),
       };
       const rule2: PricingRule = {
         sku: 'mbp',
-        apply: jest.fn((items: CartItem[]) => 200),
+        apply: jest.fn((items: CartItem[]) => toCents(200)),
       };
       const rule3: PricingRule = {
         sku: 'atv',
-        apply: jest.fn((items: CartItem[]) => 50.5),
+        apply: jest.fn((items: CartItem[]) => toCents(50.5)),
       };
 
       const checkout = new Checkout([rule1, rule2, rule3], catalog);
@@ -125,7 +126,7 @@ describe('Checkout', () => {
       const preciseRule: PricingRule = {
         sku: 'ipd',
         apply: jest.fn((items: CartItem[]) => {
-          return 123.456789;
+          return toCents(123.456789);
         }),
       };
 
@@ -140,13 +141,13 @@ describe('Checkout', () => {
         sku: 'atv',
         apply: jest.fn((items) => {
           const item = items.find((i) => i.sku === 'atv');
-          return item ? item.quantity * 109.5 : 0;
+          return item ? item.quantity * toCents(109.5) : 0;
         }),
       };
 
       const discountRule: PricingRule = {
         sku: 'atv',
-        apply: jest.fn(() => -50.0),
+        apply: jest.fn(() => toCents(-50.0)),
       };
 
       const otherRule: PricingRule = {

@@ -33,6 +33,10 @@ export class Checkout {
 
   /**
    * Calculates the total price applying all pricing rules.
+   *
+   * The total price is calculated by summing the results of all pricing rules.
+   * The pricing rules expect the cart items prices to be in the smallest currency unit (for example, cents).
+   * The total is then divided by 100 to convert it to the standard currency unit (for example, dollars).
    * @returns The total price of all items in the cart.
    */
   total(): number {
@@ -43,12 +47,12 @@ export class Checkout {
       quantity: item.quantity,
     }));
 
-    const total = this.pricingRules.reduce(
+    const totalInCents = this.pricingRules.reduce(
       (sum, rule) => sum + rule.apply(immutableCartItems),
       0,
     );
 
-    return Math.round(total * 100) / 100; // Round to 2 decimal places for floating point precision
+    return totalInCents / 100; // Round to 2 decimal places for floating point precision
   }
 
   /**

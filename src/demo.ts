@@ -12,18 +12,20 @@ import {
   composePricingRules,
 } from '.';
 
+import { toCents } from './utils';
+
 const products = [
-  { sku: 'ipd', name: 'Super iPad', price: 549.99 },
-  { sku: 'mbp', name: 'MacBook Pro', price: 1399.99 },
-  { sku: 'atv', name: 'Apple TV', price: 109.5 },
-  { sku: 'vga', name: 'VGA adapter', price: 30.0 },
+  { sku: 'ipd', name: 'Super iPad', price: toCents(549.99) },
+  { sku: 'mbp', name: 'MacBook Pro', price: toCents(1399.99) },
+  { sku: 'atv', name: 'Apple TV', price: toCents(109.5) },
+  { sku: 'vga', name: 'VGA adapter', price: toCents(30.0) },
 ];
 
 const catalog = new ProductCatalog(products);
 
 const pricingRules = composePricingRules(catalog, [
   new BuyXGetYFreeRule('atv', 3, 2, catalog), // Buy 3 Apple TVs, pay for 2
-  new BulkDiscountRule('ipd', 4, 499.99, catalog), // If more than 4 iPads, price drops to $499.99 each
+  new BulkDiscountRule('ipd', 4, toCents(499.99), catalog), // If more than 4 iPads, price drops to $499.99 each
 ]);
 
 const checkout = new Checkout(pricingRules, catalog);

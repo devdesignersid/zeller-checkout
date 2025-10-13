@@ -17,6 +17,7 @@ export function composePricingRules(
   promotionalRules: PricingRule[],
 ): PricingRule[] {
   const rules: PricingRule[] = [];
+  const seenPromotions = new Set<string>();
   const skusInCatalog = catalog.getAllProducts().map((p) => p.sku);
 
   //  Add ALL Regular Pricing Rules first
@@ -26,12 +27,23 @@ export function composePricingRules(
 
   // Then add promotional rules, if the SKU exists in the catalog
   for (const rule of promotionalRules) {
-    if (!catalog.hasProduct(rule.sku)) {
+    const ruleKey = `${rule.constructor.name}-${rule.sku}`;
+
+    if (seenPromotions.has(ruleKey)) {
       console.warn(
-        `Warning: Pricing rule assigned to unknown SKU: ${rule.sku} - Rule ignored.`,
+        `Warning: Duplicate promotional rule detected for ${rule.sku} - Skipping duplicate.`,
       );
       continue;
     }
+
+    if (!catalog.hasProduct(rule.sku)) {
+      console.warn(
+        'Warning: Pricing rule assigned to unknown SKU: unknown_sku - Rule ignored.',
+      );
+      continue;
+    }
+
+    seenPromotions.add(ruleKey);
     rules.push(rule);
   }
 

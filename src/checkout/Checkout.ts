@@ -40,6 +40,8 @@ export class Checkout {
    * @returns The total price of all items in the cart.
    */
   total(): number {
+    const CENTS_PER_DOLLAR = 100;
+
     const cartItems = Array.from(this.items.values());
 
     const immutableCartItems: CartItem[] = cartItems.map((item) => ({
@@ -52,7 +54,7 @@ export class Checkout {
       0,
     );
 
-    return totalInCents / 100; // Round to 2 decimal places for floating point precision
+    return totalInCents / CENTS_PER_DOLLAR; // Round to 2 decimal places for floating point precision
   }
 
   /**
